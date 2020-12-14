@@ -24,43 +24,4 @@ public class Table {
         this.totalPage = pageInfo.getPages();
     }
 
-    public List getList() {
-        return list;
-    }
-
-    public void setList(List list) {
-        this.list = list;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public long getTotalNum() {
-        return totalNum;
-    }
-
-    public void setTotalNum(long totalNum) {
-        this.totalNum = totalNum;
-    }
-
-    public int getTotalPage() {
-        return totalPage;
-    }
-
-    public void setTotalPage(int totalPage) {
-        this.totalPage = totalPage;
-    }
 }

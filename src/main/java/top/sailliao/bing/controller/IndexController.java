@@ -24,10 +24,9 @@ public class IndexController {
 
     @RequestMapping("")
     public String index(Integer page, HttpServletRequest request) {
-        PageInfo pageInfo = imageService.page(page == null ? 0 : page, 16);
-        logger.info("pageInfo {}", pageInfo);
+        page = page == null ? 0 : page;
+        PageInfo pageInfo = imageService.page(page, 16);
         Table table = new Table(pageInfo);
-        logger.info("table {}", table);
         table.setCurrentPage(page);
         request.setAttribute("data", table);
         return "index";
