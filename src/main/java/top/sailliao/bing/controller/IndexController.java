@@ -1,6 +1,8 @@
 package top.sailliao.bing.controller;
 
 import com.github.pagehelper.PageInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +17,17 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class IndexController {
 
+    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+
     @Autowired
     ImageService imageService;
 
     @RequestMapping("")
     public String index(Integer page, HttpServletRequest request) {
         PageInfo pageInfo = imageService.page(page == null ? 0 : page, 16);
+        logger.info("pageInfo {}", pageInfo);
         Table table = new Table(pageInfo);
+        logger.info("table {}", table);
         table.setCurrentPage(page);
         request.setAttribute("data", table);
         return "index";
