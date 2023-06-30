@@ -7,12 +7,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import top.sailliao.bing.entity.Image;
 import top.sailliao.bing.service.ImageService;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,7 +33,7 @@ public class BingIndexCrawler {
 
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-    @Autowired
+    @Resource
     ImageService imageService;
 
     @Scheduled(cron = "0 0 1 * * *")
@@ -57,7 +57,7 @@ public class BingIndexCrawler {
                     String html = response.body().string();
                     Document document = Jsoup.parse(html);
                     Elements elements = document.getElementsByClass("img_cont");
-                    Element element = null;
+                    Element element;
                     if (elements != null && elements.size() > 0) {
                         element = elements.first();
                         String imageUlr = element.attr("style");
@@ -80,6 +80,7 @@ public class BingIndexCrawler {
                         }
                         logger.info("image description {} ", description);
                         String date = FORMAT.format(new Date());
+                        imageUlr = imageUlr.replace("\"", "");
                         Image image = new Image(imageUlr, description, date);
                         imageService.save(image);
                     } else {

@@ -27,7 +27,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public PageInfo page(Integer pageNum, Integer pageSize) {
+    public PageInfo<Image> page(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         Example example = new Example(Image.class);
         example.setOrderByClause("date desc");
