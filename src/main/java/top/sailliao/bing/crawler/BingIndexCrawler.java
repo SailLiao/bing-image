@@ -4,17 +4,20 @@ import okhttp3.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import top.sailliao.bing.entity.Image;
 import top.sailliao.bing.service.ImageService;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 抓取 bing 图片
@@ -30,7 +33,7 @@ public class BingIndexCrawler {
 
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-    @Autowired
+    @Resource
     ImageService imageService;
 
     @Scheduled(cron = "0 0 1 * * *")
@@ -53,20 +56,36 @@ public class BingIndexCrawler {
                 if (response.isSuccessful()) {
                     String html = response.body().string();
                     Document document = Jsoup.parse(html);
-                    Element element = document.getElementById("bgImgProgLoad");
-                    String imageUlr = element.attr("data-ultra-definition-src");
-                    imageUlr = "https://cn.bing.com" + imageUlr;
-                    logger.info("image url {} ", imageUlr);
-                    element = document.getElementById("sh_cp");
-                    String description = element.attr("title");
-                    String date = FORMAT.format(new Date());
+                    Elements elements = document.getElementsByClass("img_cont");
+                    Element element;
+                    if (elements != null && elements.size() > 0) {
+                        element = elements.first();
+                        String imageUlr = element.attr("style");
+                        Pattern pattern = Pattern.compile("\\(([^}]*)\\)");
+                        Matcher m = pattern.matcher(imageUlr);
+                        if (m.find()) {
+                            imageUlr = m.group();
+                            imageUlr = imageUlr.replace("(", "").replace(")", "");
+                            logger.info("image url {} ", imageUlr);
+                        } else {
+                            logger.error("未获取到图片");
+                            return;
+                        }
 
-                    imageUlr = imageUlr.replace("\"", "");
-
-                    Image image = new Image(imageUlr, description, date);
-
-                    imageService.save(image);
-
+                        String description = "";
+                        elements = document.getElementsByClass("title");
+                        if (elements != null && elements.size() > 0) {
+                            element = elements.first();
+                            description = element.text();
+                        }
+                        logger.info("image description {} ", description);
+                        String date = FORMAT.format(new Date());
+                        imageUlr = imageUlr.replace("\"", "");
+                        Image image = new Image(imageUlr, description, date);
+                        imageService.save(image);
+                    } else {
+                        logger.error("没有找到图片");
+                    }
                 }
             }
         });

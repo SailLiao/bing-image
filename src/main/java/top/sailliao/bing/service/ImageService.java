@@ -10,5 +10,5 @@ public interface ImageService {
 
     Image save(Image image);
 
-    PageInfo page(Integer pageNum, Integer pageSize);
+    PageInfo<Image> page(Integer pageNum, Integer pageSize);
 }
