@@ -61,7 +61,10 @@ public class BingIndexCrawler {
                     String description = element.attr("title");
                     String date = FORMAT.format(new Date());
 
+                    imageUlr = imageUlr.replace("\"", "");
+
                     Image image = new Image(imageUlr, description, date);
+
                     imageService.save(image);
 
                 }
