@@ -80,7 +80,9 @@ public class BingIndexCrawler {
                         }
                         logger.info("image description {} ", description);
                         String date = FORMAT.format(new Date());
+                        logger.info("image url {} ", imageUlr);
                         imageUlr = imageUlr.replace("\"", "");
+                        logger.info("image url {} ", imageUlr);
                         Image image = new Image(imageUlr, description, date);
                         imageService.save(image);
                     } else {
